@@ -14,7 +14,7 @@ Type of experiments:
 -  02.Create training and validation datasets - Features Research.ipynb
 -  03.Training Models - Features Research.ipynb
 2. t-test to estimate a feature impact on a model score
--  04. Create training and validation datasets for t-Test.ipynb
+-  "04. Create training and validation datasets for t-Test.ipynb"
 -  05.Training Models and t-Test.ipynb
 3. Overfitting test
 -  06. Create training and validation datasets for overfitting test.ipynb
