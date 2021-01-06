@@ -11,29 +11,29 @@ Jobs results are read from AWS Sage Maker experiments and added to Excel files (
 Finally total time of experiments is extracted and cost can be calculated.
 Type of experiments:
 1. Features (original from a dataset or calculated) impact on a model score
--  02.Create training and validation datasets - Features Research.ipynb
--  03.Training Models - Features Research.ipynb
+-  "02.Create training and validation datasets - Features Research.ipynb"
+-  "03.Training Models - Features Research.ipynb"
 2. t-test to estimate a feature impact on a model score
 -  "04. Create training and validation datasets for t-Test.ipynb"
--  05.Training Models and t-Test.ipynb
+-  "05.Training Models and t-Test.ipynb"
 3. Overfitting test
--  06. Create training and validation datasets for overfitting test.ipynb
--  07.Training Models and overfitting test.ipynb
+-  "06. Create training and validation datasets for overfitting test.ipynb"
+-  "07.Training Models and overfitting test.ipynb"
 4. Best parameters research
--  08.Training Models - Parameters Research.ipynb
--  09. Hyperparameter Tuning job.ipynb
+-  "08.Training Models - Parameters Research.ipynb"
+-  "09. Hyperparameter Tuning job.ipynb"
 5. Partial Dependency
--  10.Create dataset for PartialDependency.ipynb
--  11. PartialDependency Inference.ipynb
--  12. PartialDependency Post Processing.ipynb
+-  "10.Create dataset for PartialDependency.ipynb"
+-  "11. PartialDependency Inference.ipynb"
+-  "12. PartialDependency Post Processing.ipynb"
 6. Model evaluation and feature importance
--  13. Models Evaluation and Feature Importance
+-  "13. Models Evaluation and Feature Importance"
 7. Shap values
--  14. Create dataset for batch transform Need Testing.ipynb
--  15. Batch Transform - Prediction and ShapValues Need Testing.ipynb
-8. 16. Experiments Cost.ipynb
+-  "14. Create dataset for batch transform Need Testing.ipynb"
+-  "15. Batch Transform - Prediction and ShapValues Need Testing.ipynb"
+8. "16. Experiments Cost.ipynb"
 
-ToDo:
+##ToDo:
 1. Automate the flow using AWS Step functions or something similar. For now all parts should be run manually
 2. Read more experiment configuration from a file instead of hard coding (parameters)
 3. Not all intermediate results need to be saved in a final experiment log locally.
