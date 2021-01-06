@@ -33,7 +33,7 @@ Type of experiments:
 -  "15. Batch Transform - Prediction and ShapValues Need Testing.ipynb"
 8. "16. Experiments Cost.ipynb"
 
-##ToDo:
+## ToDo:
 1. Automate the flow using AWS Step functions or something similar. For now all parts should be run manually
 2. Read more experiment configuration from a file instead of hard coding (parameters)
 3. Not all intermediate results need to be saved in a final experiment log locally.
