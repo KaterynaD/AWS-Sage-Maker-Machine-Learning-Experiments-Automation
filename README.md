@@ -24,5 +24,5 @@ Each experiment run returns train/valid errors to estimate overfitting. There is
 5. "08. AWS Sagemaker Experiments Cost.ipynb"
 
 ## ToDo:
-1. Training using non-standard metrics
+1. Training using non-standard metrics - It's possible to use a custom metric in training but it is not visible for Hyperparameter tuning job and other Sagemaker functionality like experiments. Open-source SageMaker XGBoost is incorrectly recognizing XGBoost as a built-in algorithm.  See  https://github.com/aws/sagemaker-xgboost-container/issues/121
 2. Hyperparameters optimization using CV folds
