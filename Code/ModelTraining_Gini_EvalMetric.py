@@ -1,5 +1,4 @@
-#ModelTraining.py uses standard XGBoost evaluation metric(AUC), no need for metric definitions or custom image
-
+#ModelTraining_Gini_EvalMetric.py uses XGBoost training with custom evaluation metric - gini. Use custom image_uri and metric defnitions.
 
 #  Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 #
@@ -33,6 +32,16 @@ import numpy as np
 
 from sklearn.metrics import roc_auc_score
 
+def gini(y, pred):
+    g = np.asarray(np.c_[y, pred, np.arange(len(y)) ], dtype=np.float)
+    g = g[np.lexsort((g[:,2], -1*g[:,1]))]
+    gs = g[:,0].cumsum().sum() / g[:,0].sum()
+    gs -= (len(y) + 1) / 2.
+    return gs / len(y)
+def gini_xgb(pred, y):
+    y = y.get_label()
+    return 'gini', gini(y, pred) / gini(y, y)
+
 def _xgb_train(params, dtrain, evals, num_boost_round, early_stopping_rounds, model_dir, output_data_dir, GetFIFlg,GetTestScoreFlg,GetTestPredFlg, is_master):
     """Run xgb train on arguments given with rabit initialized.
 
@@ -47,6 +56,7 @@ def _xgb_train(params, dtrain, evals, num_boost_round, early_stopping_rounds, mo
     booster = xgb.train(params=params,
                         dtrain=dtrain,
                         evals=evals,
+                        feval=gini_xgb,
                         maximize=True,
                         num_boost_round=num_boost_round,
                         early_stopping_rounds=early_stopping_rounds,
@@ -54,8 +64,8 @@ def _xgb_train(params, dtrain, evals, num_boost_round, early_stopping_rounds, mo
                         verbose_eval=100)
     
     print('Eval results')    
-    train_error=progress['train']['auc']
-    eval_error=progress['validation']['auc']
+    train_error=progress['train']['gini']
+    eval_error=progress['validation']['gini']
     results_pd=pd.DataFrame({'train':train_error,'valid':eval_error},columns=['train','valid'])
     
     
@@ -78,7 +88,7 @@ def _xgb_train(params, dtrain, evals, num_boost_round, early_stopping_rounds, mo
    
         #Test scores from test prediction   
         df_score = pd.DataFrame()
-        df_score['roc-auc-test']=[roc_auc_score(df_prediction['actual'], df_prediction['pred'])]
+        df_score['gini-test']=[gini_xgb(df_prediction['actual'], df_prediction['pred'])]
     
     if is_master:
         model_location = model_dir + '/xgboost-model'
@@ -122,7 +132,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--early_stopping_rounds', type=int)
     parser.add_argument('--booster', type=str)
-    parser.add_argument('--eval_metric', type=str)
+    #parser.add_argument('--eval_metric', type=str)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--scale_pos_weight', type=float)
     parser.add_argument('--colsample_bylevel', type=float)
@@ -168,7 +178,8 @@ if __name__ == '__main__':
         'objective': args.objective,
         'booster': args.booster,
         'seed': args.seed,
-        'eval_metric':args.eval_metric,
+        #'eval_metric':args.eval_metric,
+        'disable_default_eval_metric': '1',
         'scale_pos_weight':args.scale_pos_weight,
         'colsample_bylevel': args.colsample_bylevel,
         'colsample_bytree': args.colsample_bytree,

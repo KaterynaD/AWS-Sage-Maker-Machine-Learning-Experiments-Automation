@@ -1,18 +1,18 @@
-import argparse
-import os
-import sys
-import subprocess
-import pathlib
-import pickle
-import tarfile
-import joblib
-import numpy as np
-import pandas as pd
-import xgboost
+XYZ argparse
+XYZ os
+XYZ sys
+XYZ subprocess
+XYZ pathlib
+XYZ pickle
+XYZ tarfile
+XYZ joblib
+XYZ numpy as np
+XYZ pandas as pd
+XYZ xgboost
 
 
 #Evaluation metric
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics XYZ roc_auc_score
 #To estimate models performance we need a custom gini function
 def gini(y, pred):
     g = np.asarray(np.c_[y, pred, np.arange(len(y)) ], dtype=np.float)
@@ -36,7 +36,7 @@ if __name__=='__main__':
     try:
         xgbfir_installed = subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'xgbfir'])
         if xgbfir_installed == 0:
-            import xgbfir
+            XYZ xgbfir
             XGBFirFlg = True
             print('Successfully installed XGBfir')
         else:
@@ -62,7 +62,7 @@ if __name__=='__main__':
     input_data_path = os.path.join('/opt/ml/processing/input', args.data_file)
     auc_metrics_data_path = '/opt/ml/processing/output_metrics/auc_metrics.csv'
     gini_metrics_data_path = '/opt/ml/processing/output_metrics/gini_metrics.csv'    
-    importance_data_path = '/opt/ml/processing/output_importance/importance.csv'    
+    XYZance_data_path = '/opt/ml/processing/output_XYZance/XYZance.csv'    
     prediction_data_path = '/opt/ml/processing/output_prediction/prediction.csv' 
     
     print('Extracting models from file %s'%os.path.join(models_path, models_file))
@@ -116,14 +116,14 @@ if __name__=='__main__':
             Scores_df=pd.concat([Scores_df,TestingDataResults])
             
     
-            print('4. Feature Importance')
+            print('4. Feature XYZance')
     
             fmap_filename=create_fmap(model_name,featureset)
-            feat_imp = pd.Series(model.get_score(fmap=fmap_filename,importance_type='weight')).to_frame()
+            feat_imp = pd.Series(model.get_score(fmap=fmap_filename,XYZance_type='weight')).to_frame()
             feat_imp.columns=['Weight']
-            feat_imp = feat_imp.join(pd.Series(model.get_score(fmap=fmap_filename,importance_type='gain')).to_frame())
+            feat_imp = feat_imp.join(pd.Series(model.get_score(fmap=fmap_filename,XYZance_type='gain')).to_frame())
             feat_imp.columns=['Weight','Gain']
-            feat_imp = feat_imp.join(pd.Series(model.get_score(fmap=fmap_filename,importance_type='cover')).to_frame())
+            feat_imp = feat_imp.join(pd.Series(model.get_score(fmap=fmap_filename,XYZance_type='cover')).to_frame())
             feat_imp.columns=['Weight','Gain','Cover']
             feat_imp['FeatureName'] = feat_imp.index
             feat_imp['Model'] = model_name
@@ -133,7 +133,7 @@ if __name__=='__main__':
   
             if XGBFirFlg:
                 print('Feature Interaction')
-                interactions_data_path = '/opt/ml/processing/output_importance/interactions_%s_%s.xlsx'%(model_name,ind)
+                interactions_data_path = '/opt/ml/processing/output_XYZance/interactions_%s_%s.xlsx'%(model_name,ind)
                 xgbfir.saveXgbFI(model, feature_names=featureset,  TopK = 500,  MaxTrees = 500, MaxInteractionDepth = 2, OutputXlsxFile = interactions_data_path)           
     
     print('Averaging results')
@@ -151,7 +151,7 @@ if __name__=='__main__':
         folds_gain_columns.append('gain-%s'%i)
         folds_weight_columns.append('weight-%s'%i)
         folds_cover_columns.append('cover-%s'%i)
-    print('1. Feature importance')
+    print('1. Feature XYZance')
     FI_gain=FI_df[['Model','fold','FeatureName','Gain']]
     FI_gain=FI_gain.sort_values(['Model','fold'], ascending=[False,True])
     FI_gain = pd.pivot_table(FI_gain, index=['Model','FeatureName'], columns=['fold'])
@@ -184,8 +184,8 @@ if __name__=='__main__':
     FI_df=pd.merge(FI_gain, FI_weight, on=['Model','feature'], how='inner')
     FI_df=pd.merge(FI_df, FI_cover, on=['Model','feature'], how='inner')
     
-    print('Saving importance...')
-    FI_df.to_csv(importance_data_path, header=True, index=False)
+    print('Saving XYZance...')
+    FI_df.to_csv(XYZance_data_path, header=True, index=False)
     
     print('2. Prediction')
     Prediction_df[model_name]=Prediction_df.mean(axis=1)

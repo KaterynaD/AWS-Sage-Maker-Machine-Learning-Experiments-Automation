@@ -1,4 +1,4 @@
-#ModelCV.py uses standard XGBoost evaluation metric(AUC) in CV
+#ModelCV_Gini_EvalMetric.py uses ustome evaluation metric(gini) in CV
 
 
 
@@ -19,7 +19,17 @@ import xgboost as xgb
 import pandas as pd
 import numpy as np
 
-from sklearn.metrics import roc_auc_score
+
+
+def gini(y, pred):
+    g = np.asarray(np.c_[y, pred, np.arange(len(y)) ], dtype=np.float)
+    g = g[np.lexsort((g[:,2], -1*g[:,1]))]
+    gs = g[:,0].cumsum().sum() / g[:,0].sum()
+    gs -= (len(y) + 1) / 2.
+    return gs / len(y)
+def gini_xgb(pred, y):
+    y = y.get_label()
+    return 'gini', gini(y, pred) / gini(y, y)
 
 import re
 
@@ -48,7 +58,7 @@ def cv_misc_callback(oof_train_scores:list, oof_valid_scores:list, best_models:l
         folds_train_scores = []
         folds_valid_scores = []
         for i, cvpack in enumerate(env.cvfolds):
-            scores = cvpack.eval(iteration=0,feval=None)
+            scores = cvpack.eval(iteration=0,feval=gini_xgb)
             scores_l = re.split(': |\t',scores)
             train_score=scores_l[1].rpartition(':')[2]
             valid_score=scores_l[2].rpartition(':')[2]
@@ -73,9 +83,16 @@ def _xgb_cv(params, dtrain,  num_boost_round, nfold, early_stopping_rounds, mode
     oof_valid_scores = []
     best_models=[None]*nfold
     NeedModelsFlg = 'Y' if 'Y' in (GetFIFlg,GetTestScoreFlg,GetTestPredFlg) else 'N'
-    cv_results=xgb.cv(params, dtrain, num_boost_round=num_boost_round,
-                 nfold=nfold, stratified=True, shuffle=True,early_stopping_rounds=early_stopping_rounds, seed=42
-                      ,callbacks=[cv_misc_callback(oof_train_scores, oof_valid_scores,best_models,NeedModelsFlg,True), xgb.callback.print_evaluation(period=20)]
+    cv_results=xgb.cv(params, 
+                      dtrain, 
+                      feval=gini_xgb,
+                      num_boost_round=num_boost_round,
+                      nfold=nfold, 
+                      stratified=True, 
+                      shuffle=True,
+                      early_stopping_rounds=early_stopping_rounds, 
+                      seed=42,
+                      callbacks=[cv_misc_callback(oof_train_scores, oof_valid_scores,best_models,NeedModelsFlg,True), xgb.callback.print_evaluation(period=1)]
                      )
 
 
@@ -146,7 +163,7 @@ def _xgb_cv(params, dtrain,  num_boost_round, nfold, early_stopping_rounds, mode
         #Test scores from test prediction   
         df_scores = pd.DataFrame()
         for i in range(0,nfold):
-            df_scores[i]=[roc_auc_score(df_prediction['actual'], df_prediction[i])]
+            df_scores[i]=[gini_xgb(df_prediction['actual'], df_prediction[i])]
 
         df_scores['std'] = df_scores[columns].std(axis=1)
         df_scores['sem'] = df_scores[columns].sem(axis=1)
@@ -270,7 +287,8 @@ if __name__ == '__main__':
         'objective': args.objective,
         'booster': args.booster,
         'seed': args.seed,
-        'eval_metric':args.eval_metric,
+        #'eval_metric':args.eval_metric,
+        'disable_default_eval_metric': '1',
         'scale_pos_weight':args.scale_pos_weight,
         'colsample_bylevel': args.colsample_bylevel,
         'colsample_bytree': args.colsample_bytree,
