@@ -1,5 +1,5 @@
 #ModelCV_Gini_EvalMetric.py uses ustome evaluation metric(gini) in CV
-
+  
 
 
 
@@ -163,7 +163,7 @@ def _xgb_cv(params, dtrain,  num_boost_round, nfold, early_stopping_rounds, mode
         #Test scores from test prediction   
         df_scores = pd.DataFrame()
         for i in range(0,nfold):
-            df_scores[i]=[gini_xgb(df_prediction['actual'], df_prediction[i])]
+            df_scores[i]=[gini(df_prediction['actual'], df_prediction[i])/gini(df_prediction['actual'], df_prediction['actual'])]
 
         df_scores['std'] = df_scores[columns].std(axis=1)
         df_scores['sem'] = df_scores[columns].sem(axis=1)
@@ -249,7 +249,8 @@ if __name__ == '__main__':
     parser.add_argument('--colsample_bytree', type=float)
     parser.add_argument('--subsample', type=float)
     parser.add_argument('--max_delta_step', type=int)
-            
+    parser.add_argument('--reg_lambda', type=float)
+    parser.add_argument('--reg_alpha', type=float)            
             
 
     # Sagemaker specific arguments. Defaults are set in the environment variables.
@@ -293,7 +294,9 @@ if __name__ == '__main__':
         'colsample_bylevel': args.colsample_bylevel,
         'colsample_bytree': args.colsample_bytree,
         'subsample': args.subsample,
-        'max_delta_step':args.max_delta_step
+        'max_delta_step':args.max_delta_step,
+        'reg_lambda': args.reg_lambda,
+        'reg_alpha': args.reg_alpha        
         }
 
     xgb_train_args = dict(

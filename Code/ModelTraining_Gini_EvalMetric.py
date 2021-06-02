@@ -88,7 +88,8 @@ def _xgb_train(params, dtrain, evals, num_boost_round, early_stopping_rounds, mo
    
         #Test scores from test prediction   
         df_score = pd.DataFrame()
-        df_score['gini-test']=[gini_xgb(df_prediction['actual'], df_prediction['pred'])]
+        df_score['gini-test']=[gini(df_prediction['actual'], df_prediction['pred'])/gini(df_prediction['actual'],df_prediction['actual'])]
+        
     
     if is_master:
         model_location = model_dir + '/xgboost-model'

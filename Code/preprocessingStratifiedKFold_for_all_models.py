@@ -69,7 +69,7 @@ if __name__=='__main__':
         test_dataset=pd.DataFrame({target_column:y_test}).join(X_test)
         test_dataset.to_csv(test_data_output_path, header=False, index=False)
         
-        #The rest of teh data will be used in cv-fold as a whole and seprated to training/validation insode cv        
+        #The rest of the data will be used in cv-fold as a whole and seprated to training/validation insode cv        
         for i, (train_index, test_index) in enumerate(skf.split(X, y)):
             print(' fold: {}  of  {} : '.format(i+1, kfold))
             X_train, X_valid = X.iloc[train_index], X.iloc[test_index]

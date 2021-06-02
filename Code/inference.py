@@ -36,10 +36,6 @@ def predict_fn(input_data, model):
     SageMaker XGBoost model server invokes `predict_fn` on the return value of `input_fn`.
 
     Return a two-dimensional NumPy array where the first columns are predictions
-    and the remaining columns are the feature contributions (SHAP values) for that prediction.
     """
     prediction = model.predict(input_data)
-    feature_contribs = model.predict(input_data, pred_contribs=True)
-    output = np.hstack((prediction[:, np.newaxis], feature_contribs))
-    
-    return  output
+    return  prediction

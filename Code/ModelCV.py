@@ -32,7 +32,7 @@ def cv_misc_callback(oof_train_scores:list, oof_valid_scores:list, best_models:l
         if maximize:
             state['best_score'] = -np.inf
         else:
-            state['best_score'] = np.inf 
+            state['best_score'] = np.inf   
     def callback(env):
         #fold best model if flag
         if NeedModelsFlg=='Y':
@@ -73,7 +73,7 @@ def _xgb_cv(params, dtrain,  num_boost_round, nfold, early_stopping_rounds, mode
     oof_valid_scores = []
     best_models=[None]*nfold
     NeedModelsFlg = 'Y' if 'Y' in (GetFIFlg,GetTestScoreFlg,GetTestPredFlg) else 'N'
-    cv_results=xgb.cv(params, dtrain, num_boost_round=num_boost_round,
+    cv_results=xgb.cv(params,  dtrain,  num_boost_round=num_boost_round,
                  nfold=nfold, stratified=True, shuffle=True,early_stopping_rounds=early_stopping_rounds, seed=42
                       ,callbacks=[cv_misc_callback(oof_train_scores, oof_valid_scores,best_models,NeedModelsFlg,True), xgb.callback.print_evaluation(period=20)]
                      )
@@ -232,6 +232,8 @@ if __name__ == '__main__':
     parser.add_argument('--colsample_bytree', type=float)
     parser.add_argument('--subsample', type=float)
     parser.add_argument('--max_delta_step', type=int)
+    parser.add_argument('--reg_lambda', type=float)
+    parser.add_argument('--reg_alpha', type=float)
             
             
 
@@ -275,7 +277,9 @@ if __name__ == '__main__':
         'colsample_bylevel': args.colsample_bylevel,
         'colsample_bytree': args.colsample_bytree,
         'subsample': args.subsample,
-        'max_delta_step':args.max_delta_step
+        'max_delta_step':args.max_delta_step,
+        'reg_lambda': args.reg_lambda,
+        'reg_alpha': args.reg_alpha
         }
 
     xgb_train_args = dict(
